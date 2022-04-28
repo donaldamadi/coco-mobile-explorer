@@ -2,6 +2,8 @@ import 'package:coco_mobile_explorer/features/search/controllers/search_controll
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../widgets/image_builder.dart';
+
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
 
@@ -15,7 +17,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Page'),
+        title: const Text('Coco Mobile Explorer'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -30,7 +32,7 @@ class _SearchPageState extends State<SearchPage> {
                     child: TextField(
                       controller: searchController.searchTextEditingController,
                       decoration: InputDecoration(
-                        hintText: 'Search',
+                        hintText: 'Type in a search term',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(4.0),
                         ),
@@ -49,10 +51,15 @@ class _SearchPageState extends State<SearchPage> {
             const SizedBox(height: 20.0),
             Expanded(
               child: ListView.builder(
-                itemCount: 10,
+                controller: searchController.scrollController,
+                itemCount: searchController.searchResult.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text('Item $index'),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    child: ImageBuilder(
+                      searchController.searchResult[index],
+                    ),
                   );
                 },
               ),
