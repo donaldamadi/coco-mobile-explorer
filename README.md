@@ -1,16 +1,24 @@
 # coco_mobile_explorer
 
-A new Flutter project.
+This project was built with Flutter. 
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## Reference
 
-A few resources to get you started if this is your first Flutter project:
+- [Coco Explore Page](https://cocodataset.org/#explore)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Running the Project
+
+*flutter run* from the terminal will be able to run this code for both iOS and Android platforms.
+
+This test was aimed at developing a mobile version of the Coco explore Page
+
+
+## Author
+
+👤 **Donald Amadi**
+
+- GitHub: [@githubhandle](https://github.com/donaldamadi)
+- Twitter: [@twitterhandle](https://twitter.com/thatmadonald)
+- LinkedIn: [LinkedIn](https://linkedin.com/in/donald-amadi-7b95b817a)
