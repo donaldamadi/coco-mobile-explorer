@@ -10,7 +10,7 @@ This project was built with Flutter.
 
 ## Running the Project
 
-*flutter run* from the terminal will be able to run this code for both iOS and Anroid platforms.
+*flutter run* from the terminal will be able to run this code for both iOS and Android platforms.
 
 This test was aimed at developing a mobile version of the Coco explore Page
 
