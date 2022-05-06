@@ -10,71 +10,82 @@ class SearchController extends GetxController {
   RxList searchResult = [].obs;
   List<int> imageIds = [];
   List<int> categoryIds = [];
+  List<dynamic> imageList = [];
+  List<dynamic> segmentationList = [];
+  List<dynamic> captionList = [];
   RxBool isLoading = false.obs;
+  RxBool isMoreLoading = false.obs;
   int n = 0;
   ScrollController scrollController = ScrollController();
-
-  // I was not able to get the search result to update when the user types in the search bar
-  // I have not been able to figure out the appropriate request body to make the right API calls for
-  //searchImagesUrl, getImagesSegmentation and getImagesCaption
-  // Given more time, I will be able to accomplish these
 
   @override
   void onInit() {
     scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
+      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
         // page++;
-        startSearch();
+        startSearch(more: true);
       }
     });
     super.onInit();
   }
 
-  final SearchService _searchService =
-      SearchService(SearchRepositoryImplementation());
-
-  search(String query) {
-    startSearch();
-  }
+  final SearchService _searchService = SearchService(SearchRepositoryImplementation());
 
   /// Get `Ids` of images that pertains to the search query
-  startSearch() async {
+  startSearch({bool more = false}) async {
+    categoryIds.clear();
     mapIds.forEach((key, value) {
-      if (searchTextEditingController.text.trim() == value) {
+      if (searchTextEditingController.text.trim().toLowerCase() == value.toLowerCase()) {
         categoryIds.add(key);
       }
     });
+    // Search activates only when you type in the right Keyword
+    if (categoryIds.isEmpty) {
+      Get.snackbar(
+        "Incorrect Keyword",
+        "Please input a valid keyword",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+    imageIds.clear();
+    imageList.clear();
+    segmentationList.clear();
+    captionList.clear();
     Map<String, dynamic> queryParams = {
       "category_ids": categoryIds,
       "querytype": "getImagesByCats",
     };
     debugPrint("searching...");
 
-    isLoading.value = true;
+    if (more) {
+      isMoreLoading.value = true;
+    } else {
+      isLoading.value = true;
+    }
     var res = await _searchService.getImagesId(queryParams);
     isLoading.value = false;
+    isMoreLoading.value = false;
     if (res.valid!) {
       debugPrint(res.data?.length.toString());
-      debugPrint("RESULT ==============++++> ${res.data![0].toString()}",
-          wrapWidth: 1024);
+      debugPrint("RESULT ==============++++> ${res.data![0].toString()}", wrapWidth: 1024);
+      // Loop through the result five at a time to get the ids to make use later
+      for (var i = n; i < n + 5; i++) {
+        imageIds.add(res.data![i]);
+      }
+      print("=====ImageIDS $imageIds");
+      n += 4;
+
+      // Make simultaneous requests to get the images url,
+      // segmentations and captions using the `ids`
+      Future.wait([searchImagesUrl(), getImagesSegmentation(), getImagesCaption()]).then((value) {
+        imageIds.clear();
+        searchResult.addAll(imageList);
+        print(" SEARCH RESULT: ${searchResult.length}");
+      });
     } else {
-      debugPrint("======checking================> ${res.message}",
-          wrapWidth: 1024);
+      debugPrint("======checking================> ${res.message}", wrapWidth: 1024);
     }
-    imageIds.clear();
-
-    // Loop through the result five at a time to get the ids
-    for (var i = n; i < n + 5; i++) {
-      imageIds.add(res.data![i].id!);
-    }
-    print("=====ImageIDS $imageIds");
-    n += 5;
-
-    // Make simultaneous requests to get the images url,
-    // segmentation and captions using the `ids`
-    Future.wait(
-        [searchImagesUrl(), getImagesSegmentation(), getImagesCaption()]);
   }
 
   /// Request to get the images url using the `ids`
@@ -83,16 +94,13 @@ class SearchController extends GetxController {
       "image_ids": imageIds,
       "querytype": "getImages",
     };
+    print(queryParams);
 
     var res = await _searchService.getImagesUrl(queryParams);
-    if (res.valid!) {
-      debugPrint(res.data?.length.toString());
-      debugPrint("RESULT URL==============++++> ${res.data?.first.flickrUrl}",
-          wrapWidth: 1024);
-    } else {
-      debugPrint("======checking================> ${res.message}",
-          wrapWidth: 1024);
-    }
+    // if (res.valid!) {
+    debugPrint(res.data.runtimeType.toString());
+    debugPrint("RESULT URL==============++++> ${res.data?[0]}", wrapWidth: 1024);
+    imageList.addAll(res.data);
   }
 
   /// Request to get the segmentation of the images using the `ids`
@@ -103,15 +111,10 @@ class SearchController extends GetxController {
     };
 
     var res = await _searchService.getImageSegmentation(queryParams);
-    if (res.valid!) {
-      debugPrint(res.data?.length.toString());
-      debugPrint(
-          "RESULT URL==============++++> ${res.data?.first.segmentation}",
-          wrapWidth: 1024);
-    } else {
-      debugPrint("======checking================> ${res.message}",
-          wrapWidth: 1024);
-    }
+    // if (res.valid!) {
+    debugPrint(res.data?.length.toString());
+    debugPrint("RESULT URL==============++++> ${res.data[0]["segmentation"]}", wrapWidth: 1024);
+    segmentationList.addAll(res.data);
   }
 
   /// Request to get the captions of the images by their `ids`
@@ -122,13 +125,9 @@ class SearchController extends GetxController {
     };
 
     var res = await _searchService.getImagesCaption(queryParams);
-    if (res.valid!) {
-      debugPrint(res.data?.length.toString());
-      debugPrint("RESULT URL==============++++> ${res.data?.first.caption}",
-          wrapWidth: 1024);
-    } else {
-      debugPrint("======checking================> ${res.message}",
-          wrapWidth: 1024);
-    }
+    // if (res.valid!) {
+    debugPrint(res.data?.length.toString());
+    debugPrint("RESULT URL==============++++> ${res.data[0]["caption"]}", wrapWidth: 1024);
+    captionList.addAll(res.data);
   }
 }
