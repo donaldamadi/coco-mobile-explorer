@@ -30,7 +30,7 @@ class BackendService {
       receiveTimeout: 100000,
       // set request headers
       headers: {
-        "content-Type": "application/x-www-form-urlencoded",
+        "content-Type": "application/json",
       },
     );
 

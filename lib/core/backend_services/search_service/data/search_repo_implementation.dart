@@ -21,7 +21,7 @@ class SearchRepositoryImplementation implements SearchRepository {
   @override
   getImagesUrl(query) async {
     try {
-      return await _api.dio.post(Endpoints.baseurl);
+      return await _api.dio.post(Endpoints.baseurl, data: query);
     } on DioError catch (e) {
       return _api.handleError(e);
     }
@@ -30,7 +30,7 @@ class SearchRepositoryImplementation implements SearchRepository {
   @override
   getImagesSegmentation(query) async {
     try {
-      return await _api.dio.post(Endpoints.baseurl);
+      return await _api.dio.post(Endpoints.baseurl, data: query);
     } on DioError catch (e) {
       return _api.handleError(e);
     }
@@ -39,7 +39,7 @@ class SearchRepositoryImplementation implements SearchRepository {
   @override
   getImagesCaption(query) async {
     try {
-      return await _api.dio.post(Endpoints.baseurl);
+      return await _api.dio.post(Endpoints.baseurl, data: query);
     } on DioError catch (e) {
       return _api.handleError(e);
     }
