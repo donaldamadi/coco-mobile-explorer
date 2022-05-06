@@ -2,6 +2,8 @@
 
 This project was built with Flutter. 
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/fa3663b2-a1ca-4fa7-961d-83124b7d59d6/deploy-status)](https://app.netlify.com/sites/coco-explorer/deploys)
+
 
 ## Reference
 
