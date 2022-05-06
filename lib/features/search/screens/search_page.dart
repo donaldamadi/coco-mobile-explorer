@@ -49,21 +49,41 @@ class _SearchPageState extends State<SearchPage> {
               ],
             ),
             const SizedBox(height: 20.0),
-            Expanded(
-              child: ListView.builder(
-                controller: searchController.scrollController,
-                itemCount: searchController.searchResult.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    child: ImageBuilder(
-                      searchController.searchResult[index],
+            Obx(
+              () => searchController.isLoading.value
+                  ? Container(
+                      height: 50,
+                      width: 50,
+                      child: const CircularProgressIndicator(),
+                    )
+                  : Expanded(
+                      child: Obx(
+                        () => ListView.builder(
+                          controller: searchController.scrollController,
+                          itemCount: searchController.searchResult.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                              child: ImageBuilder(
+                                searchController.imageList[index]["coco_url"],
+                                searchController.segmentationList[index],
+                                searchController.captionList[index],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  );
-                },
-              ),
             ),
+            Obx(
+              () => searchController.isMoreLoading.value
+                  ? const SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: CircularProgressIndicator(),
+                    )
+                  : const SizedBox(),
+            )
           ],
         ),
       ),
